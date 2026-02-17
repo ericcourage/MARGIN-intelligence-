@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARGIN Intelligence Platform — Practice-Wide Signal Engine v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #0f1117;
+    --surface2: #161923;
+    --surface3: #1d2231;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #374151;
+
+    /* Signal colors */
+    --critical: #ef4444;
+    --critical-bg: rgba(239,68,68,0.08);
+    --critical-border: rgba(239,68,68,0.3);
+    --high: #f97316;
+    --high-bg: rgba(249,115,22,0.08);
+    --high-border: rgba(249,115,22,0.3);
+    --medium: #eab308;
+    --medium-bg: rgba(234,179,8,0.08);
+    --medium-border: rgba(234,179,8,0.3);
+    --low: #22c55e;
+    --low-bg: rgba(34,197,94,0.08);
+    --low-border: rgba(34,197,94,0.3);
+
+    /* Category colors */
+    --market: #8b5cf6;
+    --tax: #06b6d4;
+    --equity: #f59e0b;
+    --life: #ec4899;
+    --estate: #10b981;
+    --irmaa: #f43f5e;
+    --niche: #6366f1;
+    --tmn: #14b8a6;
+
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f59e0b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* ---- HEADER ---- */
+  .header {
+    background: linear-gradient(135deg, #0a0c10 0%, #0f1520 50%, #0a0c10 100%);
+    border-bottom: 1px solid var(--border2);
+    padding: 24px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+  .header-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1600px;
+    margin: 0 auto;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .logo-block { display: flex; flex-direction: column; }
+  .logo-main {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #fff;
+  }
+  .logo-main span { color: var(--gold); }
+  .logo-sub {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .hstat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .hstat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .hstat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .pulse-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--critical);
+    animation: pulse 2s infinite;
+    margin-right: 6px;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+  /* ---- MAIN ---- */
+  .main { max-width: 1600px; margin: 0 auto; padding: 32px; }
+
+  /* ---- SECTION HEADERS ---- */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 48px 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header:first-child { margin-top: 0; }
+  .section-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.05em;
+  }
+  .section-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ---- FILTER BAR ---- */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .filter-label { color: var(--muted); font-size: 10px; letter-spacing: 0.1em; margin-right: 4px; }
+  .filter-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(59,130,246,0.08);
+  }
+  .filter-btn.f-critical.active { border-color: var(--critical); color: var(--critical); background: var(--critical-bg); }
+  .filter-btn.f-market.active { border-color: var(--market); color: var(--market); background: rgba(139,92,246,0.08); }
+  .filter-btn.f-tax.active { border-color: var(--tax); color: var(--tax); background: rgba(6,182,212,0.08); }
+  .filter-btn.f-equity.active { border-color: var(--equity); color: var(--equity); background: rgba(245,158,11,0.08); }
+  .filter-btn.f-life.active { border-color: var(--life); color: var(--life); background: rgba(236,72,153,0.08); }
+  .filter-btn.f-estate.active { border-color: var(--estate); color: var(--estate); background: rgba(16,185,129,0.08); }
+  .filter-btn.f-irmaa.active { border-color: var(--irmaa); color: var(--irmaa); background: rgba(244,63,94,0.08); }
+
+  /* ---- MASTER TABLE ---- */
+  .table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    margin-bottom: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1100px;
+  }
+  thead th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border2);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  thead th:first-child { border-radius: 12px 0 0 0; }
+  thead th:last-child { border-radius: 0 12px 0 0; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr.expanded { background: var(--surface2); }
+
+  td {
+    padding: 10px 14px;
+    vertical-align: top;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* ---- PRIORITY BADGES ---- */
+  .priority {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  .p-critical { background: var(--critical-bg); border: 1px solid var(--critical-border); color: var(--critical); }
+  .p-high { background: var(--high-bg); border: 1px solid var(--high-border); color: var(--high); }
+  .p-medium { background: var(--medium-bg); border: 1px solid var(--medium-border); color: var(--medium); }
+  .p-low { background: var(--low-bg); border: 1px solid var(--low-border); color: var(--low); }
+
+  /* ---- CATEGORY TAGS ---- */
+  .cat-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid;
+    white-space: nowrap;
+    margin: 1px;
+  }
+  .cat-market { color: var(--market); border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.06); }
+  .cat-tax { color: var(--tax); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.06); }
+  .cat-equity { color: var(--equity); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+  .cat-life { color: var(--life); border-color: rgba(236,72,153,0.3); background: rgba(236,72,153,0.06); }
+  .cat-estate { color: var(--estate); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.06); }
+  .cat-irmaa { color: var(--irmaa); border-color: rgba(244,63,94,0.3); background: rgba(244,63,94,0.06); }
+  .cat-tmn { color: var(--tmn); border-color: rgba(20,184,166,0.3); background: rgba(20,184,166,0.06); }
+  .cat-rmd { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.06); }
+
+  /* ---- IRMAA CLIFF INDICATOR ---- */
+  .irmaa-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    color: var(--irmaa);
+    background: rgba(244,63,94,0.08);
+    border: 1px solid rgba(244,63,94,0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-top: 3px;
+  }
+
+  /* ---- DEADLINE PILL ---- */
+  .deadline {
+    font-size: 10px;
+    color: var(--text);
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .deadline.urgent { color: var(--critical); border-color: var(--critical-border); background: var(--critical-bg); }
+  .deadline.rolling { color: var(--medium); border-color: var(--medium-border); background: var(--medium-bg); }
+  .deadline.annual { color: var(--low); border-color: var(--low-border); background: var(--low-bg); }
+
+  /* ---- VALUE BAR ---- */
+  .value-bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .value-bar {
+    height: 4px;
+    border-radius: 99px;
+    background: var(--surface3);
+    flex: 1;
+    min-width: 60px;
+    overflow: hidden;
+  }
+  .value-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    animation: fillBar 1s ease-out both;
+  }
+  @keyframes fillBar { from { width: 0 } }
+  .value-num { font-size: 10px; color: var(--gold); font-weight: 600; min-width: 24px; }
+
+  /* ---- EXPANDABLE ROW ---- */
+  .expand-row { display: none; }
+  .expand-row.open { display: table-row; }
+  .expand-content {
+    padding: 16px 20px 20px 20px;
+    background: var(--surface3);
+    border-top: 1px solid var(--border);
+  }
+  .expand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .expand-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .expand-card-title {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .expand-card-content { font-size: 11px; color: var(--text); line-height: 1.6; }
+  .expand-card-content li { margin-left: 14px; margin-top: 3px; }
+
+  /* ---- IRMAA SECTION ---- */
+  .irmaa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .irmaa-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+  .irmaa-card:hover { border-color: var(--irmaa); }
+  .irmaa-tier-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--irmaa);
+    margin-bottom: 4px;
+  }
+  .irmaa-threshold {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .irmaa-surcharge {
+    font-size: 11px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .irmaa-detail { font-size: 10px; color: var(--muted); line-height: 1.5; }
+  .irmaa-strategies { font-size: 10px; color: var(--text); margin-top: 6px; }
+  .irmaa-strategies span { color: var(--tax); }
+
+  /* ---- NICHE CARDS ---- */
+  .niche-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .niche-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .niche-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .niche-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .niche-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .niche-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .niche-subtitle { font-size: 10px; color: var(--muted); }
+  .niche-triggers {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .niche-trigger {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: var(--surface2);
+    border-radius: 6px;
+    padding: 8px 10px;
+    border-left: 2px solid;
+  }
+  .niche-trigger-icon { font-size: 11px; margin-top: 1px; flex-shrink: 0; }
+  .niche-trigger-text { font-size: 10px; color: var(--text); line-height: 1.5; }
+  .niche-trigger-text strong { color: var(--gold); }
+
+  /* ---- LIFE EVENTS ---- */
+  .life-event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .life-event-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .life-event-card:hover { border-color: var(--life); }
+  .life-event-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .life-event-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(236,72,153,0.1);
+    border: 1px solid rgba(236,72,153,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .life-event-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .life-event-subtitle { font-size: 9px; color: var(--life); text-transform: uppercase; letter-spacing: 0.08em; }
+  .checklist-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-icon { font-size: 10px; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+  .check-text { font-size: 10px; color: var(--text); line-height: 1.4; }
+  .check-text strong { color: var(--life); }
+  .check-deadline { font-size: 9px; color: var(--critical); display: block; margin-top: 1px; }
+
+  /* ---- TOOLTIP ---- */
+  .info-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    color: var(--accent);
+    cursor: default;
+  }
+
+  /* ---- SCROLL REVEAL ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: reveal 0.5s ease both;
+  }
+  @keyframes reveal { to { opacity: 1; transform: none; } }
+
+  /* ---- SIGNAL BANNER ---- */
+  .signal-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .signal-banner-icon { font-size: 18px; }
+  .signal-banner-text { flex: 1; }
+  .signal-banner-title { font-size: 12px; color: var(--critical); font-weight: 600; }
+  .signal-banner-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .signal-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .signal-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 99px;
+    font-size: 9px;
+    padding: 3px 10px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .signal-chip.hot { border-color: var(--critical-border); color: var(--critical); background: var(--critical-bg); }
+
+  /* ---- NOTES ---- */
+  .section-note {
+    background: rgba(59,130,246,0.04);
+    border: 1px solid rgba(59,130,246,0.12);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .section-note strong { color: var(--text); }
+
+  /* ---- SCORE PILL ---- */
+  .score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+  }
+  .s9, .s10 { background: rgba(239,68,68,0.15); color: var(--critical); border: 1px solid rgba(239,68,68,0.3); }
+  .s7, .s8 { background: rgba(249,115,22,0.15); color: var(--high); border: 1px solid rgba(249,115,22,0.3); }
+  .s5, .s6 { background: rgba(234,179,8,0.15); color: var(--medium); border: 1px solid rgba(234,179,8,0.3); }
+  .s3, .s4 { background: rgba(34,197,94,0.15); color: var(--low); border: 1px solid rgba(34,197,94,0.3); }
+
+  /* Sort arrows */
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--text); }
+
+  /* Hidden rows */
+  tr.hidden-row { display: none; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  /* Strategy name */
+  .strat-name {
+    font-weight: 600;
+    font-size: 11px;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .strat-sub { font-size: 10px; color: var(--muted); }
+
+  /* expand arrow */
+  .expand-arrow {
+    color: var(--muted);
+    font-size: 10px;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  tr.expanded .expand-arrow { transform: rotate(90deg); }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    color: var(--dim);
+    font-size: 10px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-grid">
+    <div class="logo-block">
+      <div class="logo-main">MARGIN <span>INTELLIGENCE</span></div>
+      <div class="logo-sub"><span class="pulse-dot"></span>Practice-Wide Signal Engine · v2.0 · 2026</div>
+    </div>
+    <div class="header-stats">
+      <div class="hstat"><div class="hstat-num">57</div><div class="hstat-label">Total Strategies</div></div>
+      <div class="hstat"><div class="hstat-num">9</div><div class="hstat-label">Niche Profiles</div></div>
+      <div class="hstat"><div class="hstat-num">8</div><div class="hstat-label">Life Events</div></div>
+      <div class="hstat"><div class="hstat-num">5</div><div class="hstat-label">IRMAA Tiers</div></div>
+      <div class="hstat"><div class="hstat-num">$0</div><div class="hstat-label">Opportunities Missed</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- SIGNAL BANNER -->
+<div class="signal-banner reveal" style="animation-delay:0.1s">
+  <div class="signal-banner-icon">⚡</div>
+  <div class="signal-banner-text">
+    <div class="signal-banner-title">ACTIVE INTELLIGENCE TRIGGERS — Practice-Wide Scan</div>
+    <div class="signal-banner-desc">Cross-book engine monitors all data streams in real-time. When any signal fires, ranked action queue dispatched to advisor dashboard within minutes.</div>
+  </div>
+  <div class="signal-chips">
+    <div class="signal-chip hot">TLH Window Open</div>
+    <div class="signal-chip hot">Dec 31 · 45 Days</div>
+    <div class="signal-chip">IRMAA Lookback: 2024 MAGI</div>
+    <div class="signal-chip">RSU Vest Monitor: Active</div>
+    <div class="signal-chip">AFR: 5.14% (Monthly)</div>
+  </div>
+</div>
+
+<!-- ===================== SECTION 1: MASTER TABLE ===================== -->
+<div class="section-header reveal" style="animation-delay:0.15s">
+  <div class="section-icon" style="background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.2)">📊</div>
+  <div class="section-title">MASTER INTELLIGENCE TABLE</div>
+  <div class="section-badge" style="color:var(--accent);border-color:rgba(59,130,246,0.3)">57 Strategies · Ranked by Impact</div>
+</div>
+
+<div class="section-note">
+  <strong>Head of Planning View:</strong> Ranked as if managing a $1T AUM platform — prioritized by tax beta ($ saved per client), cross-book leverage (signals that affect multiple clients simultaneously), and deadline penalty (cost of missing). Click any row to expand full implementation detail, data sources, and IRMAA considerations.
+</div>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterTable('all',this)">All</button>
+  <button class="filter-btn f-critical" onclick="filterTable('critical',this)">🔴 Critical</button>
+  <button class="filter-btn f-market" onclick="filterTable('market',this)">📈 Market-Triggered</button>
+  <button class="filter-btn f-tax" onclick="filterTable('tax',this)">🏦 Tax Calendar</button>
+  <button class="filter-btn f-equity" onclick="filterTable('equity',this)">💰 Equity Comp</button>
+  <button class="filter-btn f-life" onclick="filterTable('life',this)">🎯 Life Events</button>
+  <button class="filter-btn f-estate" onclick="filterTable('estate',this)">🏛️ Estate/Gift</button>
+  <button class="filter-btn f-irmaa" onclick="filterTable('irmaa',this)">⚠️ IRMAA Exposure</button>
+  <button class="filter-btn" onclick="filterTable('tmn',this)" style="--active-c:var(--tmn)">🌿 TMN/Business</button>
+</div>
+
+<div class="table-wrapper reveal" style="animation-delay:0.2s">
+<table id="masterTable">
+<thead>
+<tr>
+  <th class="sortable" onclick="sortTable(0)">#</th>
+  <th class="sortable" onclick="sortTable(1)">Strategy</th>
+  <th>Priority</th>
+  <th>Category</th>
+  <th>Trigger Condition</th>
+  <th>Deadline / Window</th>
+  <th>IRMAA Risk</th>
+  <th class="sortable" onclick="sortTable(7)">Score</th>
+  <th>Expand</th>
+</tr>
+</thead>
+<tbody id="stratBody">
+
+<!-- ====== MARKET TRIGGERED ====== -->
+<tr class="strat-row" data-cats="market critical" onclick="toggleExpand(this)">
+  <td><span class="score s10">1</span></td>
+  <td><div class="strat-name">Tax-Loss Harvesting Engine</div><div class="strat-sub">Real-time cross-book position monitoring</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-market">Market</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Position breach loss threshold (suggest: &gt;8%). VIX spike &gt;25. S&P drawdown &gt;5% in 10 days.</td>
+  <td><div class="deadline urgent">Dec 31 (T+1 settle)</div></td>
+  <td><div class="irmaa-flag">⚠️ TLH reduces MAGI → may lower tier</div></td>
+  <td><span class="score s10">10</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">How Software Detects</div><div class="expand-card-content">Real-time custodian feed monitors unrealized loss % per lot. When any position crosses threshold, engine checks: (1) wash-sale conflicts across ALL accounts in book, (2) correlated positions, (3) net realized gain/loss YTD. Generates ranked harvest candidates with replacement securities and IRMAA impact projection.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Cross-Book Advantage</div><div class="expand-card-content">Advisor sees all 25 clients simultaneously. When market drops 7%, engine surfaces ALL clients with harvestable losses ranked by tax beta (dollars saved per dollar harvested). Solo view misses timing correlation across book.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Data Sources Required</div><div class="expand-card-content">Custodian real-time positions + cost basis; YTD realized gain/loss (Holistiplan); projected AGI (RightCapital); VIX/market data feed; wash-sale cross-check across IRAs, joint, solo accounts.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Output: Advisor Action Queue</div><div class="expand-card-content">Ranked list: Client A — harvest $48K loss in NVDA → saves $14,400 tax, IRMAA tier unchanged. Client B — harvest triggers wash-sale with IRA holding — BLOCKED. Client C — harvest $22K, drops MAGI below IRMAA Tier 2 → additional $2,100 Part B/D savings.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="market critical irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s10">2</span></td>
+  <td><div class="strat-name">Roth Conversion Opportunist</div><div class="strat-sub">Drawdown-triggered conversion window</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-market">Market</span><span class="cat-tag cat-irmaa">IRMAA</span></td>
+  <td>Portfolio value drops &gt;8% (suppresses conversion cost). Pre-RMD clients with bracket headroom. IRMAA cliff analysis required.</td>
+  <td><div class="deadline urgent">Dec 31</div></td>
+  <td><div class="irmaa-flag">⚠️ Conversion increases MAGI → 2-yr lookback risk</div></td>
+  <td><span class="score s10">10</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Trigger Logic</div><div class="expand-card-content">Engine fires when: portfolio value drops &gt;8% AND client is pre-72 AND estimated bracket headroom &gt; $0 after projected income. IRMAA cliff model: calculates maximum safe conversion amount that stays below next IRMAA tier (using 2-year lookback — 2026 conversion affects 2028 Medicare). Surfaces "conversion budget" per client.</div></div>
+        <div class="expand-card"><div class="expand-card-title">IRMAA Cliff Integration</div><div class="expand-card-content"><ul><li>Single: $106K / MFJ: $212K — base premium</li><li>Single: $133K / MFJ: $266K → +$804/yr surcharge</li><li>Single: $167K / MFJ: $334K → +$2,076/yr surcharge</li><li>Single: $200K / MFJ: $400K → +$3,348/yr surcharge</li><li>Single: $500K / MFJ: $750K → +$4,236/yr surcharge</li></ul>Engine shows exact dollar to IRMAA cliff for each client.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Cross-Book Signal</div><div class="expand-card-content">When S&P falls 10%, engine immediately calculates Roth headroom for all 25 clients simultaneously. Ranks by tax savings per dollar converted × probability of higher future rates × years of tax-free compounding remaining. Advisor gets prioritized call list within minutes of market open.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Adjacent Strategies Fired</div><div class="expand-card-content">Roth conversion trigger also checks: QCD eligibility (offset conversion with QCD for age 70½+ clients), charitable bunching to offset conversion income, and whether drawdown creates TLH opportunity to harvest losses to fund conversion tax bill.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="market critical equity" onclick="toggleExpand(this)">
+  <td><span class="score s10">3</span></td>
+  <td><div class="strat-name">RSU Vesting Tax Acceleration Alert</div><div class="strat-sub">Vest-day ordinary income + immediate sell/hold decision</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-equity">Equity Comp</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>RSU vest event in employee record. W-2 income spike auto-detected. Witholding adequacy check fires immediately.</td>
+  <td><div class="deadline urgent">Same-day decision</div></td>
+  <td><div class="irmaa-flag">⚠️ W-2 spike may push through IRMAA tiers</div></td>
+  <td><span class="score s10">10</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">RSU Intelligence Suite</div><div class="expand-card-content">On vest date: (1) FMV at vest = ordinary income, (2) engine checks if withholding covers tax (execs often under-withheld at 22% flat rate vs. 37% marginal), (3) suggests estimated payment if needed, (4) projects impact on IRMAA 2 years forward, (5) calculates concentration risk — if company stock &gt;15% of portfolio, surfaces diversification plan.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Sell vs. Hold Analysis</div><div class="expand-card-content">Engine models: (a) sell immediately — no LTCG risk, lock in FMV basis, (b) hold — bet on appreciation but concentrated risk + LTCG clock starts, (c) staged sale — systematic diversification plan, (d) exchange fund or variable prepaid forward for illiquid/insider-restricted shares. Shows after-tax expected value of each path.</div></div>
+        <div class="expand-card"><div class="expand-card-title">ESPP Companion Module</div><div class="expand-card-content">ESPP purchase: 15% discount = immediate embedded gain. Qualifying disposition (hold 2yr from offering + 1yr from purchase) vs. disqualifying disposition analysis. Engine tracks all ESPP lots, surfaces optimal holding periods, and flags when clients approach 2-year qualifying threshold.</div></div>
+        <div class="expand-card"><div class="expand-card-title">ISO / NQ Optimizer</div><div class="expand-card-content"><strong>NQ Exercise:</strong> Spread = ordinary income. Engine calculates optimal exercise quantity to fill bracket headroom without triggering AMT. <strong>ISO Exercise:</strong> No regular tax, but AMT preference item — engine models AMT exposure using Form 6251 estimate. 83(b) election tracker: fires 30-DAY COUNTDOWN on any restricted stock grant (irrevocable, missed = catastrophe).</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="market equity critical" onclick="toggleExpand(this)">
+  <td><span class="score s9">4</span></td>
+  <td><div class="strat-name">83(b) Election 30-Day Countdown</div><div class="strat-sub">Irrevocable deadline — catastrophic if missed</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-equity">Equity Comp</span></td>
+  <td>Any restricted property grant entered in CRM/data feed. Clock starts on grant date. Day 1 alert. Day 20 escalation. Day 28 emergency alert.</td>
+  <td><div class="deadline urgent">30 days from grant</div></td>
+  <td><div class="irmaa-flag">⚠️ 83(b) election freezes ordinary income at grant FMV vs. vest FMV — IRMAA planning critical for founders/execs</div></td>
+  <td><span class="score s9">9</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Why This Is DEFCON 1</div><div class="expand-card-content">83(b) election on restricted stock/profits interests converts future appreciation to LTCG. If FMV at grant is near $0 (common for founders), tax cost to elect is minimal. If missed and stock appreciates 10x, entire appreciation taxed as ordinary income at vest. One missed election can cost millions. No extensions, no exceptions.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Who Triggers This</div><div class="expand-card-content">Startup founders, pre-IPO employees receiving restricted stock, partners receiving profits interests in partnerships/LLCs, executives with performance-vesting restricted grants. Cross-book scan: any client showing startup equity or new employer restricted grant in their records.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Filing Requirements</div><div class="expand-card-content">Must be filed with IRS service center within 30 days of grant. Copy attached to timely filed return. Copy retained by taxpayer. IRS confirmation not issued — proof of mailing critical. Engine generates filing checklist, calculates tax due, and coordinates with CPA if integrated.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="market critical irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s9">5</span></td>
+  <td><div class="strat-name">Volatility-Triggered Behavior Risk Monitor</div><div class="strat-sub">Predict client panic → deploy outreach before call comes in</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-market">Market</span></td>
+  <td>VIX &gt; 28 OR portfolio drops &gt;7% in 5 days. Historical behavior score computed from prior actions, survey responses, and call log sentiment.</td>
+  <td><div class="deadline rolling">Rolling — fire within hours</div></td>
+  <td>—</td>
+  <td><span class="score s9">9</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Behavioral Scoring Model</div><div class="expand-card-content">Score 1-10 per client based on: prior selloff behavior (2020 COVID, 2022 rate hikes), risk questionnaire responses, portfolio construction mismatch (equity % vs. stated tolerance), cash reserves, major life events, proximity to retirement/large expense. Score &gt;7 = proactive outreach, not reactive.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Proactive Outreach Sequence</div><div class="expand-card-content">Market drops 5%: Email auto-sends with personalized portfolio context + 1-pager "Your Plan Still Works." Drops 8%: Phone call triggered with talking points pre-populated. Drops 12%: Emergency review meeting template sent. Each outreach pre-empts the panic call and anchors client to long-term plan.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Cross-Book Leverage</div><div class="expand-card-content">Without this: advisor handles 25 simultaneous panic calls reactively. With this: engine ranks clients by behavior risk score, advisor calls #1-3 before they call you. Capacity multiplied 8x. Retention dramatically improved at highest-risk moments.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<!-- ====== TAX CALENDAR ====== -->
+<tr class="strat-row" data-cats="tax critical irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s9">6</span></td>
+  <td><div class="strat-name">Capital Gains Budget Reset Monitor</div><div class="strat-sub">Jan 1 annual reset — 0% LTCG bracket scan</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span><span class="cat-tag cat-irmaa">IRMAA</span></td>
+  <td>Jan 1: Reset all realized gain/loss trackers. Immediately model 0% LTCG room (Single: &lt;$48,350; MFJ: &lt;$96,700 taxable income). Q4: Model remaining room before Dec 31.</td>
+  <td><div class="deadline annual">Jan 1 reset / Dec 31 deadline</div></td>
+  <td><div class="irmaa-flag">⚠️ Gains harvesting raises MAGI — model IRMAA cliff before executing</div></td>
+  <td><span class="score s9">9</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">0% Bracket Opportunity</div><div class="expand-card-content">For clients in 0% LTCG bracket: harvest unrealized gains tax-free. Resets cost basis without tax cost. Particularly powerful for: clients in gap years (retired, pre-Social Security), years with large deductions, years with business losses. Engine calculates exact headroom after all income sources projected.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Loss Carryforward Coordination</div><div class="expand-card-content">Cross-references prior year Schedule D. If client has $80K carryforward: can realize $80K gains "for free" (offset by carryforward), effectively eliminating deferred gain liability. Engine surfaces this annually — frequently overlooked by solo advisors without systematic tracking.</div></div>
+        <div class="expand-card"><div class="expand-card-title">IRMAA Risk Model</div><div class="expand-card-content">Before any gain realization: engine checks if adding LTCG to MAGI would push client through IRMAA tier. Example: Client projected $204K MAGI, MFJ threshold $212K. Safe to harvest up to $8K gains. Harvesting $10K = $804/yr Medicare surcharge × 2 years = $1,608 penalty on $10K harvest. May not be worth it.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tax critical irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s9">7</span></td>
+  <td><div class="strat-name">Year-End Income Manipulation Window</div><div class="strat-sub">Accelerate/defer income and deductions strategically</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span><span class="cat-tag cat-irmaa">IRMAA</span></td>
+  <td>Oct 1 - Dec 31. Business owners with discretion over income timing. Executives with bonus deferral elections. Deferred comp 409A open season (Dec elections for next year).</td>
+  <td><div class="deadline urgent">Dec 31 most strategies; Dec 1 for 409A</div></td>
+  <td><div class="irmaa-flag">⚠️ Deferred comp deferral = direct MAGI reduction = IRMAA tier management</div></td>
+  <td><span class="score s9">9</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Income Acceleration Scenarios</div><div class="expand-card-content"><ul><li>Recognize capital gains in low-income year before rate increases</li><li>Convert deferred comp distribution to current year if in lower bracket</li><li>Bill clients/collect receivables before Dec 31 (cash basis business)</li><li>Take IRA distribution before RMD age if bracket favorable</li><li>Exercise NQ options in lower bracket year</li></ul></div></div>
+        <div class="expand-card"><div class="expand-card-title">Income Deferral Scenarios</div><div class="expand-card-content"><ul><li>Push receivables to January (cash basis)</li><li>Max 409A deferral election (must elect by Dec 31 for NEXT year income)</li><li>Defer bonus payment to January if employer allows</li><li>Prepay deductible expenses (business, mortgage interest)</li><li>Accelerate charitable deductions via DAF contribution</li><li>Augusta Rule: schedule home meetings before Dec 31</li></ul></div></div>
+        <div class="expand-card"><div class="expand-card-title">409A Deferred Comp Module</div><div class="expand-card-content">409A election deadline is typically Dec 31 for NEXT year's income. For new plans: within 30 days of eligibility. Engine: (1) surfaces all clients with 409A plans in CRM, (2) models optimal deferral amounts based on projected retirement brackets, (3) calculates distribution timing risk (lump sum vs. installments), (4) IRMAA impact of distributions at 65+.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tax high irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s9">8</span></td>
+  <td><div class="strat-name">Charitable Bunching & DAF Optimizer</div><div class="strat-sub">Biennial bunching + QCD engine for 70½+ clients</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span><span class="cat-tag cat-irmaa">IRMAA</span></td>
+  <td>Client gifts within 110-140% of standard deduction floor. Age 70½+ QCD eligible. Q4 DAF funding window to capture current-year deduction.</td>
+  <td><div class="deadline urgent">Dec 31</div></td>
+  <td><div class="irmaa-flag">⚠️ QCD reduces MAGI (unlike cash gift); critical for IRMAA management at 70½+</div></td>
+  <td><span class="score s8">8</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Bunching Engine Logic</div><div class="expand-card-content">Engine compares: (a) annual giving vs. standard deduction ($29,200 MFJ 2024), (b) if client gives $20K/yr, standard deduction exceeds itemized — no benefit. Solution: give $40K in Year 1 (bunched), $0 in Year 2. Year 1: itemize + $40K gift vs. $29,200 standard = $10,800 extra deduction. At 37%: $4,000 tax savings every 2 years. Tracked automatically across book.</div></div>
+        <div class="expand-card"><div class="expand-card-title">QCD: Most Powerful Charitable Tool</div><div class="expand-card-content">QCD ($105,000 limit/person 2024): direct IRA transfer to charity. Advantages over cash gift: (1) reduces MAGI dollar-for-dollar (cash gift doesn't), (2) satisfies RMD without income recognition, (3) preserves itemized deductions for other expenses, (4) avoids NII tax on IRA distribution. For clients near IRMAA cliff: QCD is single most efficient tool to manage MAGI.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Appreciated Stock to DAF</div><div class="expand-card-content">Client donates appreciated stock to DAF: avoids LTCG, gets FMV deduction, fund DAF for multi-year giving from one big deduction year. Engine: identifies all positions with embedded gain &gt;$10K, calculates after-tax cost basis of gift vs. cash gift. Often 2x more efficient than cash donation. Particularly powerful when combined with Roth conversion offset.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tax critical" onclick="toggleExpand(this)">
+  <td><span class="score s9">9</span></td>
+  <td><div class="strat-name">RMD Aggregation & QCD Offset Engine</div><div class="strat-sub">$50K+ penalty risk if missed. Multi-account optimization.</div></td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span><span class="cat-tag cat-irmaa">IRMAA</span><span class="cat-tag cat-rmd">RMD</span></td>
+  <td>Age 73+ clients (SECURE 2.0). Inherited IRA 10-year rule. Dec 31 deadline. April 1 for first-year RMD. QCD can offset up to $105K.</td>
+  <td><div class="deadline urgent">Dec 31 / Apr 1 first year</div></td>
+  <td><div class="irmaa-flag">⚠️ RMDs add directly to MAGI. QCD offset is primary IRMAA mitigation tool.</div></td>
+  <td><span class="score s9">9</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Multi-Account RMD Optimization</div><div class="expand-card-content">Traditional IRA RMDs can be aggregated (take from one account). 403(b) same. But: 401(k) RMDs cannot be aggregated — each plan calculated and distributed separately. Inherited IRA 10-year rule: all funds must be distributed by Dec 31 of year 10 (if owner died after RMD age: annual RMDs required each year). Engine tracks all accounts, deadlines, and aggregation rules.</div></div>
+        <div class="expand-card"><div class="expand-card-title">QCD Prioritization</div><div class="expand-card-content">For charitably-inclined clients 70½+: QCD first, then cash RMD. Maximum QCD: $105K/person ($210K MFJ if both have IRAs). Engine: calculates QCD needed to offset enough of RMD to drop client below IRMAA tier, then shows cash RMD for remainder. Coordinated with DAF bunching strategy.</div></div>
+        <div class="expand-card"><div class="expand-card-title">SECURE 2.0 Updates Tracked</div><div class="expand-card-content">RMD start age now 73 (75 for those born after 1959). Roth 401(k) — no more RMDs during owner's lifetime (2024+). 50% penalty reduced to 25% (10% if corrected timely). Engine auto-updates client RMD schedules when law changes, flags first-year RMD clients automatically.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tax high" onclick="toggleExpand(this)">
+  <td><span class="score s8">10</span></td>
+  <td><div class="strat-name">Contribution Limit Maximization Monitor</div><div class="strat-sub">401k, IRA, HSA, SIMPLE, SEP, DB, Solo 401k — track every dollar</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Employee deferral elections in payroll. Catch-up eligibility at ages 50, 55 (HSA), 60-63 (SECURE 2.0 super catch-up). Annual limit changes Jan 1.</td>
+  <td><div class="deadline annual">Dec 31 (401k); Apr 15 (IRA/SEP)</div></td>
+  <td>—</td>
+  <td><span class="score s8">8</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">2025/2026 Limits Engine</div><div class="expand-card-content">401(k): $23,500 + $7,500 catch-up age 50+ (but $11,250 SECURE 2.0 super catch-up for ages 60-63). IRA: $7,000 + $1,000 catch-up. HSA: $4,300/individual, $8,550/family + $1,000 catch-up age 55+. SEP: 25% of comp or $69,000. SIMPLE: $16,500 + $3,500 catch-up. Defined Benefit: up to $275,000 annual benefit. Engine tracks contributions against limits monthly and alerts when under-contributing.</div></div>
+        <div class="expand-card"><div class="expand-card-title">HSA Mega Strategy</div><div class="expand-card-content">HSA triple tax advantage: deductible contribution, tax-free growth, tax-free withdrawal for medical. At age 65: withdrawals for ANY purpose (just taxed as ordinary income like IRA). Strategy: max fund HSA every year, pay all medical out-of-pocket, keep receipts, reimburse yourself decades later tax-free. Engine tracks HSA funding gaps across all eligible clients.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Defined Benefit Niche</div><div class="expand-card-content">For high-income self-employed or business owners over 50: DB plan contributions can exceed $200K/year. Tax savings at 37%+ marginal rate. Engine identifies: (a) clients with self-employment income &gt;$250K, (b) age 50+ for maximum catch-up benefit, (c) no younger employees to minimize cost, (d) stable income for required funding. TMN: "Cross-tested plan" applies here too.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tax high irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s8">11</span></td>
+  <td><div class="strat-name">Social Security Optimization Trigger</div><div class="strat-sub">Age 62/67/70 decision + IRMAA/Roth coordination</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span><span class="cat-tag cat-irmaa">IRMAA</span></td>
+  <td>Age 62, Full Retirement Age (66-67), and 70 triggers. Widow/widower: survivor benefit at 60. Cross-reference: Roth conversion window before SS starts, RMD timing, IRMAA lookback.</td>
+  <td><div class="deadline rolling">Age-triggered; irreversible</div></td>
+  <td><div class="irmaa-flag">⚠️ SS benefit (85% taxable) adds to MAGI — coordinate with Roth/conversion strategy</div></td>
+  <td><span class="score s8">8</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Claiming Strategy Matrix</div><div class="expand-card-content">Break-even analysis: delay from 62→70 = 76% benefit increase. Break-even age ~82-84. Engine models: health, spousal benefit coordination (restricted application strategies post-deeming rule), survivor benefit optimization, file-and-suspend alternatives. Combined with Roth conversion "sweet spot" — years between retirement and SS start are optimal conversion years.</div></div>
+        <div class="expand-card"><div class="expand-card-title">The Pre-SS Roth Window</div><div class="expand-card-content">Client retires at 62, delays SS to 70. 8-year window with low income, low RMDs (pre-73), low IRMAA. Engine maximizes Roth conversions in this window: up to top of 22-24% bracket each year. By 70 when SS starts adding $40K/year to MAGI, Roth base is built and IRMAA management becomes easier with less RMD exposure.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Survivor Benefit Intelligence</div><div class="expand-card-content">Engine flags at age 60 for widowed clients: survivor benefit available. At 62: own reduced benefit. Optimize: start survivor at 62, switch to own benefit at 70 (if own benefit is higher). Engine tracks both benefits across book, surfaces optimal switching strategy for each client automatically.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<!-- ====== ESTATE/GIFT ====== -->
+<tr class="strat-row" data-cats="estate high" onclick="toggleExpand(this)">
+  <td><span class="score s8">12</span></td>
+  <td><div class="strat-name">Annual Gift Exclusion Utilization Tracker</div><div class="strat-sub">$18K/recipient 2024; sunset of lifetime exemption 2026</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-estate">Estate</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Q4 alert for unused annual exclusion. 529 superfunding opportunity (5-year election). Lifetime exemption sunset Dec 31, 2025 — use it or lose it. AFR-based intra-family loans.</td>
+  <td><div class="deadline urgent">Dec 31 annual; Dec 31, 2025 for sunset</div></td>
+  <td>—</td>
+  <td><span class="score s8">8</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">2025/2026 Exemption Sunset</div><div class="expand-card-content">Current lifetime exemption: $13.61M/person ($27.22M MFJ). TCJA sunset Dec 31, 2025 → reverts to ~$7M/person estimated. Clients with $7M-$27M estates: urgent gifting strategy before sunset. Each year of delay can cost $3M+ in exemption. Engine identifies all clients at risk and surfaces urgency.</div></div>
+        <div class="expand-card"><div class="expand-card-title">529 Superfunding</div><div class="expand-card-content">5-year gift tax averaging: contribute $90K/person (5 × $18K) to 529 in one year, treated as spread over 5 years. No annual gift reported for 5 years. Couple: $180K per beneficiary in one shot. Engine identifies new grandchildren/children in CRM and triggers 529 opportunity within 30 days of birth notification.</div></div>
+        <div class="expand-card"><div class="expand-card-title">GRAT / IDGT / AFR Strategies</div><div class="expand-card-content">When AFR is low: GRATs freeze estate value, appreciation passes to heirs estate-tax-free. IDGTs (Intentionally Defective Grantor Trusts): sell assets to trust, income tax paid by grantor is another gift to heirs. SCIN (Self-Canceling Installment Note): useful for health-impaired clients. Engine monitors monthly AFR, flags when rate conditions favor trust strategies.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="estate medium" onclick="toggleExpand(this)">
+  <td><span class="score s7">13</span></td>
+  <td><div class="strat-name">Stepped-Up Basis Monitor at Death</div><div class="strat-sub">Coordinate inheritances, swap assets before death</div></td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+  <td><span class="cat-tag cat-estate">Estate</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Terminal illness notification in CRM. Asset inventory showing highly appreciated positions. Community property state detection (double step-up available).</td>
+  <td><div class="deadline rolling">Life-event triggered</div></td>
+  <td>—</td>
+  <td><span class="score s7">7</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Step-Up Strategy</div><div class="expand-card-content">IRC §1014: assets included in decedent's estate receive FMV basis at death. For $500K of AAPL bought at $10K: $490K gain eliminated. Strategy: ensure highly appreciated assets pass through estate (not gifted during life — gifts carry carryover basis). Community property states: BOTH halves of community property step up (superior to joint tenancy). Engine: flags clients in community property states with high unrealized gains.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Asset Swap Strategy</div><div class="expand-card-content">Terminally ill client has: $500K highly appreciated taxable stock AND $500K depreciated assets in IRA. Strategy: swap — give appreciated stock to estate (gets step-up), put depreciated assets in taxable (no benefit to step-up on already-low-basis IRA). Engine models estate inclusion vs. lifetime gift for each asset class, surfaces optimal allocation to maximize step-up.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<!-- ====== TMN / BUSINESS OWNER STRATEGIES ====== -->
+<tr class="strat-row" data-cats="tmn high" onclick="toggleExpand(this)">
+  <td><span class="score s8">14</span></td>
+  <td><div class="strat-name">S-Corp Salary/Distribution Optimizer</div><div class="strat-sub">TMN: "Elect S-Corp" — SE tax savings up to $14K+/yr</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-tmn">TMN</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Self-employment income &gt;$75K. Currently operating as sole prop or single-member LLC. Payroll infrastructure in place or easily established. Net profit &gt;$40K after reasonable comp.</td>
+  <td><div class="deadline rolling">Mar 15 S-Corp election retroactive (new entities); 75 days for existing</div></td>
+  <td><div class="irmaa-flag">⚠️ Reduces W-2 income → potential IRMAA tier management via salary optimization</div></td>
+  <td><span class="score s8">8</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">SE Tax Savings Model</div><div class="expand-card-content">Sole prop: all net income subject to 15.3% SE tax (on first $160,200, 2.9% above). S-Corp: split into reasonable W-2 salary + distributions. Distributions avoid 15.3% SE tax. Example per TMN blueprint: $300K net → $100K W-2 + $200K distribution → saves $23,000 SE tax/year. IRS "reasonable compensation" standard enforced. Engine calculates optimal split per industry benchmarks.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Companion Retirement Contributions</div><div class="expand-card-content">S-Corp enables: employer Solo 401(k) contribution (25% of W-2 salary) + employee deferral ($23,500). At $100K W-2: contribute $23,500 + $25,000 employer = $48,500/year vs. SEP at same level. Defined benefit add-on: further increase if high income and older. Engine models optimal plan design for each business owner client.</div></div>
+        <div class="expand-card"><div class="expand-card-title">QBI 199A Coordination</div><div class="expand-card-content">20% QBI deduction (if extended beyond 2025): W-2 wages create W-2 wage limitation safety. SSTBs (doctors, lawyers, consultants) phase out above $232,900 (single) / $465,800 (MFJ). Engine tracks QBI eligibility, phase-out position, and models optimal structure (some SSTBs benefit from lower W-2/higher distribution to maximize deduction). Expires Dec 31, 2025 unless extended.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tmn high" onclick="toggleExpand(this)">
+  <td><span class="score s8">15</span></td>
+  <td><div class="strat-name">Augusta Rule Home Rental Optimizer</div><div class="strat-sub">TMN: Rent home to business — up to 14 days tax-free income</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-tmn">TMN</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Business owner client. Home suitable for business meetings. 4+ hours of legitimate business activity per event. Fair market rental value documented.</td>
+  <td><div class="deadline annual">Dec 31 — must conduct meetings during year</div></td>
+  <td>—</td>
+  <td><span class="score s8">8</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">How It Works</div><div class="expand-card-content">IRC §280A(g): taxpayer may rent principal residence up to 14 days/year without reporting income. Business pays fair market rental rate to owner. Business deducts rental expense. Owner receives tax-free income. Typical: $500-$2,000/day × 14 days = $7,000-$28,000 annual tax-free income. Must document: business purpose, fair market rate from comparable venues, signed rental agreement.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Risk Factors / IRS Requirements</div><div class="expand-card-content">Must be actual business events (board meetings, client entertainment, company offsites — not personal parties rebranded). FMV rate must be supportable (local event venue comparables). No more than 14 days. Keep records: rental agreement, agenda, attendees, photos. S-Corp or LLC must have sufficient business activity to justify. Engine surfaces this for all business owner clients in Q4.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tmn high" onclick="toggleExpand(this)">
+  <td><span class="score s7">16</span></td>
+  <td><div class="strat-name">Hire Family Members Income Shift</div><div class="strat-sub">TMN: Shift income to lower-bracket family members</div></td>
+  <td><span class="priority p-high">🔶 High</span></td>
+  <td><span class="cat-tag cat-tmn">TMN</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Business owner with spouse or children (7-17). Children earn up to $14,600 standard deduction + fund Roth IRA. No FICA for minor children in sole prop/partnership.</td>
+  <td><div class="deadline annual">Dec 31 — must pay wages during year</div></td>
+  <td>—</td>
+  <td><span class="score s7">7</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Children Employment Strategy</div><div class="expand-card-content">Children of sole prop/single-member LLC owners: no FICA (Social Security/Medicare) if under 18. Wages deductible to business, offset by child's standard deduction at $14,600 (2024) — effectively tax-free. Above $14,600: 10% bracket vs. parent's 37%. Strategy: pay wages for REAL services (social media, office work, modeling). Kiddie Tax: unearned income, not wages — this is clean.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Roth IRA Funding for Children</div><div class="expand-card-content">Children with earned income can contribute to Roth IRA up to earned income ($7,000 limit). Parent pays wages → child contributes to Roth. 40-year tax-free compounding begins. $7,000/year from age 14-18 = $35,000 invested. At 7% over 50 years = $1.3M tax-free. Engine identifies all clients with minor children and suitable business structure.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tmn medium equity" onclick="toggleExpand(this)">
+  <td><span class="score s7">17</span></td>
+  <td><div class="strat-name">QSBS §1202 Gain Exclusion Tracker</div><div class="strat-sub">Up to $10M (or 10×) gain exclusion — biggest tax break in code</div></td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+  <td><span class="cat-tag cat-equity">Equity Comp</span><span class="cat-tag cat-estate">Estate</span></td>
+  <td>Client holds or is about to sell C-corp stock. Company had &lt;$50M assets at time of issuance. Held &gt;5 years. Active business (not service-type SSTBs). Acquired after Sept 1993.</td>
+  <td><div class="deadline rolling">5-year hold requirement</div></td>
+  <td>—</td>
+  <td><span class="score s7">7</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">QSBS Exclusion Details</div><div class="expand-card-content">§1202: Exclude up to 100% of gain on sale of qualifying small business stock from federal income tax. Limit: greater of $10M or 10× adjusted basis. Stacking strategy: gift shares to multiple family members, each gets their own $10M exclusion. Trust structures can multiply exclusions further. Engine identifies all clients with startup equity and tracks 5-year holding period clock and &lt;$50M asset test.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Pre-Sale Planning Window</div><div class="expand-card-content">Before business sale: (1) confirm QSBS eligibility — C-corp structure? (S-corps don't qualify) (2) Verify &lt;$50M assets at original issue, (3) Must have been issued — not purchased on secondary market, (4) Convert S-corp to C-corp if 5+ years before sale, (5) Consider §1045 rollover into QSBS if approaching 5-year cliff with sale imminent.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tmn medium" onclick="toggleExpand(this)">
+  <td><span class="score s7">18</span></td>
+  <td><div class="strat-name">Captive Insurance / ERM Plan</div><div class="strat-sub">TMN: Self-insure business risks — up to $2.2M/yr pre-tax</div></td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+  <td><span class="cat-tag cat-tmn">TMN</span></td>
+  <td>Business owner with &gt;$250K discretionary cash flow. Genuine uninsured business risks (key person, cyber, supply chain, reputational). Conservative implementation only — IRS scrutiny elevated.</td>
+  <td><div class="deadline rolling">Entity setup; annual premium payment</div></td>
+  <td>—</td>
+  <td><span class="score s6">6</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-card" style="grid-column:span 2"><div class="expand-card-title">Important Implementation Notes</div><div class="expand-card-content">Captive insurance / closely-held insurance company (831(b) election for small captives): genuine insurance contract required. IRS listed transaction risk for abusive arrangements. As TMN notes: requires actuarial study, must follow insurance regulations. Best candidates: businesses with real, quantifiable uninsured risks and stable income. NOT for income shelter purposes — must be legitimate risk management. Engage specialized insurance counsel. Engine surfaces for qualifying clients only — high threshold.</div></div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tmn medium" onclick="toggleExpand(this)">
+  <td><span class="score s6">19</span></td>
+  <td><div class="strat-name">1031 Exchange & Real Estate Intelligence</div><div class="strat-sub">Defer gains indefinitely on investment property</div></td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+  <td><span class="cat-tag cat-tmn">TMN</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Investment property sale with built-in gain &gt;$50K. 45-day identification / 180-day exchange window starts at close. QI (Qualified Intermediary) must be in place BEFORE sale.</td>
+  <td><div class="deadline urgent">45-day ID / 180-day close (hard deadlines)</div></td>
+  <td><div class="irmaa-flag">⚠️ 1031 defers gain but recognized year still impacts MAGI — coordinate timing</div></td>
+  <td><span class="score s6">6</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-grid">
+        <div class="expand-card"><div class="expand-card-title">Exchange Timeline (Mission Critical)</div><div class="expand-card-content">Day 0: Close on relinquished property. Day 1-45: Identify replacement properties (max 3 properties, 200% rule, or 95% rule). Day 46-180: Close on replacement property. Cannot touch proceeds — QI holds funds. Miss these deadlines: entire gain recognized, no exceptions. Engine: fires alert at property sale, surfaces QI selection, starts 45-day countdown with daily alerts.</div></div>
+        <div class="expand-card"><div class="expand-card-title">Cost Segregation Companion</div><div class="expand-card-content">On any real estate acquisition: cost segregation study accelerates depreciation from 39-year (commercial) or 27.5-year (residential) to 5, 7, or 15-year assets. Bonus depreciation (60% in 2024, phasing out) allows immediate deduction. For $1M property: $150K-$250K in accelerated deductions Year 1. Engine: flags all real estate acquisitions for cost segregation analysis within 30 days of close.</div></div>
+      </div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="tax medium irmaa" onclick="toggleExpand(this)">
+  <td><span class="score s6">20</span></td>
+  <td><div class="strat-name">Withholding Assessment & Safe Harbor Monitor</div><div class="strat-sub">Avoid underpayment penalty — especially equity comp clients</div></td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+  <td><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Q3 projection: estimated tax shortfall &gt;$1K. RSU vesting adds income. Business income variance. Safe harbor: 100% of prior year tax OR 90% of current year tax (110% of prior year if AGI &gt;$150K).</td>
+  <td><div class="deadline urgent">Jan 15, Apr 15, Jun 15, Sep 15 quarterly</div></td>
+  <td>—</td>
+  <td><span class="score s6">6</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-card"><div class="expand-card-title">Withholding Intelligence</div><div class="expand-card-content">Engine models YTD income against safe harbor threshold. Particularly critical for: RSU vesting clients (22% flat withholding vs. 37% marginal = large underpayment), business owners with variable income, clients with large capital gains. Q3 review: if shortfall projected, surfaces options: (1) adjust W-4 withholding, (2) Q4 estimated payment, (3) IRA distribution with 100% withholding election (can count as quarterly payment for underpayment penalty purposes).</div></div>
+    </div>
+  </td>
+</tr>
+
+<tr class="strat-row" data-cats="estate medium" onclick="toggleExpand(this)">
+  <td><span class="score s6">21</span></td>
+  <td><div class="strat-name">Rebalancing & Drift Alert with Tax Overlay</div><div class="strat-sub">Tax-aware rebalancing — never trigger unnecessary gains</div></td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+  <td><span class="cat-tag cat-market">Market</span><span class="cat-tag cat-tax">Tax</span></td>
+  <td>Portfolio drift &gt;5% from target. Tax cost of rebalancing vs. risk of continued drift. Coordinate with TLH opportunities, new contributions, asset location optimization.</td>
+  <td><div class="deadline rolling">Continuous monitoring</div></td>
+  <td>—</td>
+  <td><span class="score s6">6</span></td>
+  <td><span class="expand-arrow">▶</span></td>
+</tr>
+<tr class="expand-row">
+  <td colspan="9">
+    <div class="expand-content">
+      <div class="expand-card"><div class="expand-card-title">Tax-Overlay Rebalancing Logic</div><div class="expand-card-content">Engine models: (1) tax cost of selling overweight position to rebalance, (2) alternatives: new contributions directed to underweight assets, (3) asset location swap — buy more bonds in IRA, reduce in taxable, (4) TLH pairing — harvest losses in one position simultaneously with rebalancing gain. Goal: rebalance without triggering net gain. After-tax tracking error calculated and compared to tax cost. Shows which clients can rebalance tax-efficiently vs. those who should accept drift to avoid large taxable event.</div></div>
+    </div>
+  </td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- ===================== SECTION 2: IRMAA CLIFF MONITOR ===================== -->
+<div class="section-header reveal" style="animation-delay:0.25s">
+  <div class="section-icon" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2)">⚠️</div>
+  <div class="section-title">IRMAA CLIFF INTELLIGENCE</div>
+  <div class="section-badge" style="color:var(--irmaa);border-color:rgba(244,63,94,0.3)">2025 Medicare Surcharge Tiers · 2-Year Lookback Rule</div>
+</div>
+
+<div class="section-note">
+  <strong>2-Year Lookback:</strong> 2025 IRMAA is based on 2023 MAGI. 2026 IRMAA is based on 2024 MAGI. Every Roth conversion, capital gain, RSU vest, or RMD taken today echoes into Medicare costs two years forward. Engine models this for every strategy simultaneously. Life-change exception available: retirement, divorce, death of spouse, reduction in work hours — file SSA Form SSA-44.
+</div>
+
+<div class="irmaa-grid reveal" style="animation-delay:0.3s">
+  <div class="irmaa-card">
+    <div class="irmaa-tier-label">Tier 0 — Base Premium</div>
+    <div class="irmaa-threshold">Single ≤ $106,000 · MFJ ≤ $212,000</div>
+    <div class="irmaa-surcharge">Part B: $185.00/mo · Part D: $0 surcharge</div>
+    <div class="irmaa-detail">Goal: keep MAGI below this threshold if possible. Primary levers: QCD, 401k contributions, HSA, loss harvesting, deferred comp elections.</div>
+    <div class="irmaa-strategies">Key strategies: <span>QCD, Roth conversion ceiling, TLH, 409A deferral</span></div>
+  </div>
+  <div class="irmaa-card">
+    <div class="irmaa-tier-label">Tier 1 — First Cliff</div>
+    <div class="irmaa-threshold">Single $106,001–$133,000 · MFJ $212,001–$266,000</div>
+    <div class="irmaa-surcharge">Part B: +$66.60/mo · Part D: +$12.90/mo = <strong style="color:var(--critical)">$955/yr/person</strong></div>
+    <div class="irmaa-detail">Crossing this cliff by $1 of MAGI costs $955/year/person. For couples: $1,910/year. 2-year forward impact: $1,910–$3,820 total. Frequently triggered by: a single extra dividend, small Roth conversion overage, ESPP sale.</div>
+    <div class="irmaa-strategies">Avoid by: <span>QCD optimization, capping Roth conversions, TLH to offset gains</span></div>
+  </div>
+  <div class="irmaa-card">
+    <div class="irmaa-tier-label">Tier 2 — Second Cliff</div>
+    <div class="irmaa-threshold">Single $133,001–$167,000 · MFJ $266,001–$334,000</div>
+    <div class="irmaa-surcharge">Part B: +$166.60/mo · Part D: +$33.30/mo = <strong style="color:var(--critical)">$2,398/yr/person</strong></div>
+    <div class="irmaa-detail">Marginal impact of crossing Tier 1→Tier 2: +$1,443/year/person. High Roth conversion clients, business owners with income spikes, and equity comp vesting frequently in this range. Key planning zone.</div>
+    <div class="irmaa-strategies">Avoid by: <span>Business income deferral, large QCD, charitable bunching, maximize pre-tax contributions</span></div>
+  </div>
+  <div class="irmaa-card">
+    <div class="irmaa-tier-label">Tier 3 — Danger Zone</div>
+    <div class="irmaa-threshold">Single $167,001–$200,000 · MFJ $334,001–$400,000</div>
+    <div class="irmaa-surcharge">Part B: +$266.60/mo · Part D: +$53.80/mo = <strong style="color:var(--critical)">$3,844/yr/person</strong></div>
+    <div class="irmaa-detail">Executives, high earners, and business owners in this bracket. RSU vests, NQ option exercises, large Roth conversions, and business sale proceeds can push through multiple tiers simultaneously. Model each transaction before executing.</div>
+    <div class="irmaa-strategies">Model: <span>Each transaction's 2-year MAGI impact before execution</span></div>
+  </div>
+  <div class="irmaa-card">
+    <div class="irmaa-tier-label">Tier 4 — High MAGI Surcharge</div>
+    <div class="irmaa-threshold">Single $200,001–$500,000 · MFJ $400,001–$750,000</div>
+    <div class="irmaa-surcharge">Part B: +$366.60/mo · Part D: +$74.20/mo = <strong style="color:var(--critical)">$5,291/yr/person</strong></div>
+    <div class="irmaa-detail">Most executive and high-net-worth clients land here. Primary concern: spike years from business sale, large RSU vest, or property sale triggering Tier 5 exposure unnecessarily.</div>
+    <div class="irmaa-strategies">Planning: <span>Installment sales, 1031 exchanges, deferred comp, tax-loss harvesting to stay in this tier vs. Tier 5</span></div>
+  </div>
+  <div class="irmaa-card">
+    <div class="irmaa-tier-label">Tier 5 — Maximum Surcharge</div>
+    <div class="irmaa-threshold">Single &gt; $500,000 · MFJ &gt; $750,000</div>
+    <div class="irmaa-surcharge">Part B: +$396.60/mo · Part D: +$81.00/mo = <strong style="color:var(--critical)">$5,732/yr/person</strong></div>
+    <div class="irmaa-detail">Limited planning opportunity at this level — focus on whether spike is recurring or one-time (business sale, equity liquidity event). One-time event: file SSA Form SSA-44 for life-change exception. Recurring: IRMAA is simply a cost of success at this income level.</div>
+    <div class="irmaa-strategies">Mitigate: <span>Installment sales, charitable lead trusts, 1031, QSBS exclusion, private placement life insurance (PPLI)</span></div>
+  </div>
+</div>
+
+<!-- ===================== SECTION 3: EQUITY COMPENSATION ===================== -->
+<div class="section-header reveal" style="animation-delay:0.3s">
+  <div class="section-icon" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2)">💰</div>
+  <div class="section-title">EQUITY COMPENSATION INTELLIGENCE ENGINE</div>
+  <div class="section-badge" style="color:var(--equity);border-color:rgba(245,158,11,0.3)">RSU · ISO · NQ · ESPP · 83(b) · 409A · QSBS · Carry</div>
+</div>
+
+<div class="table-wrapper reveal" style="animation-delay:0.35s">
+<table>
+<thead>
+<tr>
+  <th>Comp Type</th>
+  <th>Trigger</th>
+  <th>Tax Treatment</th>
+  <th>Critical Deadlines</th>
+  <th>IRMAA Impact</th>
+  <th>Cross-Book Signal</th>
+  <th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr onclick="toggleExpand(this)" style="cursor:pointer">
+  <td><div class="strat-name">RSU (Restricted Stock Units)</div></td>
+  <td>Vest event; company data integration</td>
+  <td>Ordinary income at vest FMV. Withholding gap at 22% vs. marginal rate (often 37%). Basis = FMV at vest.</td>
+  <td><div class="deadline urgent">Same-day: sell-to-cover decisions</div><div class="deadline rolling">Q4: concentrated position review</div></td>
+  <td><div class="irmaa-flag">⚠️ W-2 spike → IRMAA 2 years forward</div></td>
+  <td>Engine monitors ALL unvested RSU schedules across book. When major vest approaching: generates concentration risk analysis, withholding check, and diversification plan 90 days in advance.</td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+</tr>
+<tr onclick="toggleExpand(this)" style="cursor:pointer">
+  <td><div class="strat-name">ISO (Incentive Stock Options)</div></td>
+  <td>Drawdown in underlying stock; AMT exposure model; $100K annual limit</td>
+  <td>No regular tax on exercise. AMT preference item = bargain element. If hold 2yr from grant + 1yr from exercise: LTCG on full gain. ISO at AMT: minimum tax credit generated for future use.</td>
+  <td><div class="deadline rolling">$100K/yr exercise limit (FMV at grant)</div><div class="deadline rolling">90 days post-employment to exercise</div></td>
+  <td><div class="irmaa-flag">⚠️ AMT income = MAGI component — may affect IRMAA threshold calculations</div></td>
+  <td>Engine models AMT exposure BEFORE any exercise. Calculates optimal exercise quantity that maximizes spread without triggering additional AMT. Cross-references with TLH opportunities to offset AMT with capital losses.</td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+</tr>
+<tr onclick="toggleExpand(this)" style="cursor:pointer">
+  <td><div class="strat-name">NQ (Non-Qualified Options)</div></td>
+  <td>Stock price appreciation; low-income year identification; pre-liquidity event</td>
+  <td>Exercise spread = ordinary income + payroll tax. Post-exercise gain/loss = capital gain/loss. No holding period requirement for ordinary income treatment.</td>
+  <td><div class="deadline rolling">Expiration: typically 10yr from grant</div><div class="deadline urgent">90 days post-employment termination</div></td>
+  <td><div class="irmaa-flag">⚠️ Spread = W-2 → direct IRMAA 2-year impact; model bracket before exercising</div></td>
+  <td>Engine monitors expiration dates across all NQ grants. Fires 1-year, 6-month, and 90-day alerts. Calculates optimal exercise year based on projected income, bracket headroom, and IRMAA cliff proximity.</td>
+  <td><span class="priority p-high">🔶 High</span></td>
+</tr>
+<tr onclick="toggleExpand(this)" style="cursor:pointer">
+  <td><div class="strat-name">ESPP (Employee Stock Purchase Plan)</div></td>
+  <td>Purchase window close; 2-year qualifying disposition clock</td>
+  <td>15% discount = immediate gain. Disqualifying sale: discount = ordinary income. Qualifying sale (2yr offering + 1yr purchase): discount = ordinary income; additional gain = LTCG.</td>
+  <td><div class="deadline rolling">2-year offering date / 1-year purchase date for qualifying disposition</div></td>
+  <td><div class="irmaa-flag">⚠️ Ordinary income component adds to MAGI regardless of disposition type</div></td>
+  <td>Engine tracks all ESPP lots: purchase date, offering date, qualifying disposition countdown. Flags when approaching qualifying threshold. Models after-tax benefit of immediate vs. qualified sale for each lot.</td>
+  <td><span class="priority p-high">🔶 High</span></td>
+</tr>
+<tr onclick="toggleExpand(this)" style="cursor:pointer">
+  <td><div class="strat-name">Deferred Comp (409A)</div></td>
+  <td>Dec 31 election deadline for next year income; distribution schedule planning</td>
+  <td>Deferral: no current tax. Distribution: ordinary income (no FICA on distribution). Risks: company insolvency, 409A violation (immediate inclusion + 20% penalty + interest).</td>
+  <td><div class="deadline urgent">Dec 31: election for next year deferral</div><div class="deadline rolling">Within 30 days for new participants</div></td>
+  <td><div class="irmaa-flag">⚠️ Deferral REDUCES MAGI → IRMAA management tool. Distribution ADDS to MAGI → plan distribution years carefully</div></td>
+  <td>Most valuable IRMAA management tool for high-income executives: elect to defer $200K+ = direct MAGI reduction = possible tier drop = $5,000+ Medicare savings × 2 years. Distribution timing at retirement: coordinate with Roth conversion strategy to manage MAGI in each year.</td>
+  <td><span class="priority p-critical">⚡ Critical</span></td>
+</tr>
+<tr onclick="toggleExpand(this)" style="cursor:pointer">
+  <td><div class="strat-name">Carried Interest (Fund Managers)</div></td>
+  <td>Fund realization event; 3-year holding period for LTCG treatment</td>
+  <td>Post-TCJA: 3-year hold required for LTCG on carried interest. If &lt;3yr: short-term capital gain. Sec. 1061 recharacterization rules. State tax variation (NY, CA fully tax as ordinary income).</td>
+  <td><div class="deadline rolling">3-year holding period from each investment</div></td>
+  <td><div class="irmaa-flag">⚠️ STCG on carry = ordinary income rate + NIIT 3.8% + IRMAA impact</div></td>
+  <td>Engine tracks 3-year holding period for each carried interest position. Flags when realization event approaching with &lt;3yr hold — surfaces option to delay distribution or accelerate to capture LTCG treatment.</td>
+  <td><span class="priority p-medium">🟡 Medium</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- ===================== SECTION 4: LIFE EVENTS COMMAND CENTER ===================== -->
+<div class="section-header reveal" style="animation-delay:0.35s">
+  <div class="section-icon" style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.2)">🎯</div>
+  <div class="section-title">LIFE EVENTS COMMAND CENTER</div>
+  <div class="section-badge" style="color:var(--life);border-color:rgba(236,72,153,0.3)">Automated Checklist Triggers on CRM Life Event Detection</div>
+</div>
+
+<div class="section-note">
+  When a life event is detected (via CRM update, client statement, or advisor note), engine auto-generates a comprehensive tax and planning checklist ranked by deadline urgency. <strong>Zero tolerance for missed planning:</strong> every life event has tax deadlines, IRMAA implications, and estate updates that are time-sensitive.
+</div>
+
+<div class="life-event-grid reveal" style="animation-delay:0.4s">
+  <!-- MARRIAGE -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">💍</div>
+      <div>
+        <div class="life-event-title">MARRIAGE</div>
+        <div class="life-event-subtitle">Immediate + Year-End Actions</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>MFJ vs. MFS Analysis</strong> — model "marriage bonus" or "marriage penalty" before filing<span class="check-deadline">⚡ Before first joint return</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Beneficiary Updates</strong> — 401k, IRA, insurance, TOD accounts<span class="check-deadline">⚡ Within 30 days</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>W-4 Withholding Adjustment</strong> — combined income may push into higher bracket; avoid underpayment penalty<span class="check-deadline">⚡ Immediately after marriage</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>IRMAA Baseline Reset</strong> — MFJ thresholds apply immediately. If both spouses have Medicare: model combined MAGI against new joint thresholds<span class="check-deadline">⏱ Annual planning</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Roth IRA Contribution Phase-Out Shift</strong> — MFJ phase-out $230K-$240K vs. single $146K-$161K — may open or close Roth eligibility<span class="check-deadline">⏱ Current year contribution</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Estate Plan Update</strong> — wills, POA, HCPOA, titling of assets. Community property state implications.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Social Security Name Change</strong> — earnings record continuity; name must match SSA records for accurate benefit calculation</div></div>
+    </div>
+  </div>
+
+  <!-- DIVORCE -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">⚖️</div>
+      <div>
+        <div class="life-event-title">DIVORCE</div>
+        <div class="life-event-subtitle">Complex Tax Minefield — Engage CDFA</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>QDRO Filing Deadline</strong> — retirement account division requires Qualified Domestic Relations Order. Must be court-ordered and plan-accepted. No taxes if properly executed. <strong>Mistakes are catastrophic.</strong><span class="check-deadline">⚡ Before retirement account transfer</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Tax-Neutral Asset Division</strong> — $500K in taxable stock ≠ $500K in IRA. Model after-tax value of each asset. Carryover basis for gifted assets. Engine calculates true after-tax equivalence for all assets on table.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Filing Status Bridge Year</strong> — MFJ for full year if married on Dec 31. Head of Household if custodial parent. Optimal status depends on income split and deductions.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Alimony Tax Treatment</strong> — Pre-2019 decree: deductible payer, taxable recipient. Post-2018 decree: NO deduction, NO inclusion. Critical for settlement negotiations.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>IRMAA Filing Status Reset</strong> — after divorce, each files as Single (lower IRMAA thresholds). MAGI that was safe as MFJ may trigger surcharges as Single.<span class="check-deadline">⚡ Model impact immediately</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>$500K Home Sale Exclusion</strong> — timing home sale before vs. after divorce determines MFJ ($500K) vs. single ($250K) exclusion. Coordinate carefully.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>SS Survivor & Spousal Benefits</strong> — divorced spouse entitled to spousal SS if married 10+ years. Track marriage duration in CRM.</div></div>
+    </div>
+  </div>
+
+  <!-- NEW BABY -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">👶</div>
+      <div>
+        <div class="life-event-title">NEW BABY / ADOPTION</div>
+        <div class="life-event-subtitle">Immediate + First Year Planning</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>529 Account Setup</strong> — open immediately. 5-year superfunding opportunity for grandparents ($90K or $180K per couple). Compound growth advantage of early funding.<span class="check-deadline">⚡ Within 30 days</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Child Tax Credit Optimization</strong> — $2,000 per child (&lt;17). Phase-out above $200K single/$400K MFJ. ACTC refundable portion modeling.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Dependent Care FSA</strong> — $5,000/year pre-tax vs. $2,100 Child & Dependent Care Credit (for high earners). FSA almost always wins at high incomes. Open enrollment coordination.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Life Insurance Review</strong> — new dependent triggers complete coverage analysis. Term policy for income replacement. Beneficiary designation updates for all policies and accounts.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Will & Guardianship Designation</strong> — critical: who raises the child if both parents die? Estate plan must address.<span class="check-deadline">⚡ Within 60 days</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Kiddie Tax Planning</strong> — unearned income &gt;$2,500 for children &lt;19 (full-time students &lt;24) taxed at parent's rate. Structure custodial account investments accordingly (growth, not dividends).</div></div>
+    </div>
+  </div>
+
+  <!-- JOB CHANGE / LAYOFF -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">💼</div>
+      <div>
+        <div class="life-event-title">JOB CHANGE / LAYOFF</div>
+        <div class="life-event-subtitle">Time-Sensitive Equity & Retirement Decisions</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Option Exercise Clock</strong> — NQ: typically 90 days post-termination to exercise. ISO: 90 days or converts to NQ. Missing = total loss. Engine fires DEFCON 1 alert with countdown on any employment change.<span class="check-deadline">⚡ 90-day window</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Unvested RSU Acceleration</strong> — change of control or termination may trigger accelerated vesting. Review grant agreements for cliffs and acceleration triggers.<span class="check-deadline">⚡ Review before signing separation agreement</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Severance Tax Planning</strong> — lump sum vs. installments. Possible to defer? Negotiate timing to manage bracket. COBRA vs. ACA marketplace comparison (layoff = qualifying life event).</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>401(k) Rollover Decision</strong> — leave in plan (if good fund options + low fees + creditor protection), roll to IRA, or roll to new employer plan. Backdoor Roth consideration: pre-tax rollover affects pro-rata rule.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Low-Income Year Opportunity</strong> — layoff year may be ideal for Roth conversion (low bracket), TLH to realize carryforward gains, or NQ/ISO exercise at lower rates.<span class="check-deadline">🟡 Model by Dec 31</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Deferred Comp Distributions</strong> — 409A plan distributions may be triggered by separation from service. Review timing elections. Large distributions = large MAGI = IRMAA exposure.</div></div>
+    </div>
+  </div>
+
+  <!-- DEATH -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">🕊️</div>
+      <div>
+        <div class="life-event-title">DEATH OF SPOUSE / FAMILY MEMBER</div>
+        <div class="life-event-subtitle">Estate Administration + Survivor Planning</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Stepped-Up Basis Inventory</strong> — immediately document all asset values at date of death. All assets in decedent's estate receive FMV basis reset. Community property: both halves step up.<span class="check-deadline">⚡ Document immediately</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Surviving Spouse Filing Status</strong> — MFJ in year of death. Qualifying surviving spouse for 2 additional years (if dependent child). Then single/HoH. Dramatic IRMAA threshold drop in year 3+.<span class="check-deadline">⚡ Model IRMAA exposure year 3+</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Estate Tax Return (Form 706)</strong> — due 9 months from death (6-month extension available). Only required if gross estate &gt; $13.61M (2024). Portability election: surviving spouse can use deceased spouse's unused exemption.<span class="check-deadline">⚡ 9 months + 6 extension</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Inherited IRA RMD Schedule</strong> — 10-year rule for non-spouse beneficiaries (post-SECURE). Spouse: can treat as own IRA. Annual RMDs may be required if owner died after RMD age. Calendar all deadlines.<span class="check-deadline">⚡ Year 10 Dec 31 deadline</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>IRMAA Life-Change Appeal</strong> — death of spouse = qualifying event for SSA-44 appeal. Surviving spouse can request lower IRMAA based on current income rather than 2-year lookback.<span class="check-deadline">⚡ File SSA-44 immediately</span></div></div>
+    </div>
+  </div>
+
+  <!-- HOME SALE / PURCHASE -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">🏠</div>
+      <div>
+        <div class="life-event-title">HOME SALE / PURCHASE</div>
+        <div class="life-event-subtitle">Primary + Investment Property Planning</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>$250K/$500K Exclusion Eligibility</strong> — own and use as primary residence 2 of last 5 years. MFJ: $500K exclusion. Partial exclusion for unforeseen circumstances (job loss, divorce, health). Track purchase date and occupancy in CRM.<span class="check-deadline">⚡ Track from day of purchase</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>1031 Exchange Pre-Planning</strong> — QI must be in place BEFORE closing. For investment property: can defer indefinitely. Step-up at death eliminates remaining deferred gain. Engine: flags investment properties approaching potential sale with 90-day advance notice.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Cost Segregation on Acquisition</strong> — purchase triggers immediate cost segregation opportunity. 180 days from acquisition: engineer must complete study. Bonus depreciation rates declining (60% in 2024). File with first-year tax return.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>IRMAA Gain Recognition</strong> — large home sale with gain &gt; exclusion: taxable portion adds to MAGI. Coordinate timing to minimize IRMAA tier impact. 1031 on rental portion deferred separately.</div></div>
+    </div>
+  </div>
+
+  <!-- SOLD/STARTED BUSINESS -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">🏢</div>
+      <div>
+        <div class="life-event-title">SOLD / STARTED BUSINESS</div>
+        <div class="life-event-subtitle">Business Sale = Biggest Tax Event of Client's Life</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Asset vs. Stock Sale</strong> — buyers prefer asset sales (step-up). Sellers prefer stock sales (capital gains). C-corp stock: QSBS §1202 exclusion if eligible. Difference can be $5M+ in taxes. Engage M&A tax counsel immediately on LOI.<span class="check-deadline">⚡ Before signing any letter of intent</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Installment Sale Modeling</strong> — spread proceeds over multiple years → manage IRMAA tiers and capital gains brackets. §453 installment sale: interest component taxable in each year. Risk: buyer default. Secured note recommended.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>ESOP as Exit Strategy</strong> — S-Corp ESOP: owner can defer gain indefinitely (§1042 rollover). Employees benefit. Business continuity preserved. Complex, but powerful for right client. Identify ESOP candidates 3-5 years before planned exit.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>DAF Mega-Contribution Pre-Sale</strong> — donate appreciated business interest to DAF before sale. Deduct FMV. DAF sells tax-free. Proceeds distributed to charity over time. Can offset significant portion of sale gain at 37%.</div></div>
+    </div>
+  </div>
+
+  <!-- FINANCIAL INDEPENDENCE / EARLY RETIREMENT -->
+  <div class="life-event-card">
+    <div class="life-event-header">
+      <div class="life-event-icon">🎯</div>
+      <div>
+        <div class="life-event-title">FINANCIAL INDEPENDENCE DATE</div>
+        <div class="life-event-subtitle">Pre-Retirement Optimization Window</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>FI Date Review Trigger</strong> — engine models: at current savings rate, portfolio value, and spending, what is the projected FI date? Recalculates quarterly. Surfaces date to advisor for proactive planning conversation.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Roth Conversion Ladder</strong> — early retirees can access Roth conversions after 5-year seasoning. Convert now, access principal at retirement without 10% penalty. Engine models conversion ladder starting 5 years before projected FI date.<span class="check-deadline">⚡ Start 5 years before FI</span></div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>ACA Subsidy Optimization</strong> — early retirees pre-65 on ACA. Income management to maximize Premium Tax Credit. 400% FPL cliff disappeared (enhanced subsidies through 2025). Model optimal income level. MAGI management critical.</div></div>
+      <div class="checklist-item"><span class="check-icon">◆</span><div class="check-text"><strong>Asset Location Finalization</strong> — shift most tax-inefficient assets (REITs, bonds, actively managed funds) to tax-deferred accounts. Tax-efficient assets (index funds, ETFs) to taxable. Lock this in before retirement when flexibility decreases.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECTION 5: NICHE INTELLIGENCE ===================== -->
+<div class="section-header reveal" style="animation-delay:0.45s">
+  <div class="section-icon" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2)">🎯</div>
+  <div class="section-title">NICHE CLIENT INTELLIGENCE PROFILES</div>
+  <div class="section-badge" style="color:var(--niche);border-color:rgba(99,102,241,0.3)">Specialized Triggers by Client Archetype</div>
+</div>
+
+<div class="section-note">
+  <strong>Niche Intelligence Layer:</strong> Each client archetype faces recurring, predictable triggers that a $1T platform would systematize. Engine auto-detects client niche from CRM data (employer type, income composition, industry code) and applies specialized monitoring logic. Highest-value clients often have multiple overlapping niche profiles.
+</div>
+
+<div class="niche-grid reveal" style="animation-delay:0.5s">
+
+  <!-- DOCTORS & DENTISTS -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2)">🏥</div>
+      <div>
+        <div class="niche-title">DOCTORS, DENTISTS & OPTOMETRISTS</div>
+        <div class="niche-subtitle">High Income + Late Saver + Practice Owner</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Student Loan Strategy Trigger</strong> — PSLF vs. standard repayment vs. aggressive payoff model. Income-driven repayment recertification annual deadline. PSLF employment certification annually. For employed physicians: PSLF can eliminate $200K+ in loans. Private practice: aggressive payoff + maximize investing.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Late-Start Defined Benefit Plan</strong> — physicians often start earning at 32-35 after residency. DB plan allows contributions up to $275K/year. At 50+ with $600K+ income: DB + profit sharing = $350K+ annual tax deferral. Time-sensitive: each year delayed is permanent loss of catch-up capacity.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>SSTB QBI Phase-Out Monitor</strong> — medical practices are SSTBs: QBI 20% deduction phases out between $232,900-$282,900 (single). Engine calculates exact QBI deduction available and surfaces S-Corp W-2 optimization to maximize if in phase-out range.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Practice Buy-In / Partnership Trigger</strong> — practice buy-in via installment note. Section 736 payment analysis. Goodwill allocation strategy. Capital gain vs. ordinary income characterization. Engine flags when client joins or purchases practice partnership.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Equipment Section 179 / Bonus Depreciation</strong> — medical equipment purchases (imaging, dental chairs, optometry equipment). Section 179: $1.16M deduction limit. 60% bonus depreciation (2024). Time purchases before Dec 31. Cost segregation on office buildout.</div></div>
+      <div class="niche-trigger" style="border-color:var(--low)"><span class="niche-trigger-icon">🟢</span><div class="niche-trigger-text"><strong>Malpractice Insurance Structure</strong> — tail coverage vs. occurrence policy cost-benefit. Captive insurance for self-insured risk layer (see ERM strategy). Asset protection structure for practice equity separate from personal assets.</div></div>
+    </div>
+  </div>
+
+  <!-- EXECUTIVES / HIGH COMMISSION -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2)">👔</div>
+      <div>
+        <div class="niche-title">EXECUTIVES & HIGH-COMMISSION EARNERS</div>
+        <div class="niche-subtitle">Realtors · Commercial RE · Corporate C-Suite</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Golden Parachute 280G Analysis</strong> — change of control payments exceeding 3× base salary: 20% excise tax on excess parachute payment. Engine flags M&A activity for any client employer, immediately models 280G exposure, and surfaces mitigation strategies (shareholder vote approval, restructuring comp).</div></div>
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Variable Income Bracket Surfing</strong> — realtors and commercial RE brokers: commission income is lumpy. Large commission year: max 401k, Solo 401k, SEP, DB plan, QBI deduction. Light year: exercise NQ options, accelerate Roth conversions. Engine models each year's income composition and surfaces optimal action for current tax year.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Deferred Comp Cliff at Retirement</strong> — large 409A balances can create massive income spikes in retirement distribution years. Plan distribution schedule NOW: 10-equal installments vs. lump sum. Coordinate with Roth conversion strategy, Social Security timing, and IRMAA lookback planning 5+ years before retirement.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Concentration Risk — Single Employer Stock</strong> — executives often hold 30-60%+ of net worth in employer stock (RSU, ESPP, options). Engine flags concentration &gt;15% of portfolio and surfaces: staged diversification plan, collar options, exchange fund, or 10b5-1 plan for insiders. Trust structures for tax-efficient diversification.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Realtor/Commercial RE Self-Employment Structure</strong> — solo RE agent: S-Corp to reduce SE tax on commission income. Commission-only income: quarterly estimated taxes (large underpayment risk). Solo 401k for self-employed. Section 199A QBI deduction (real estate not SSTB). Real estate professional status: passive loss limitations eliminated.</div></div>
+    </div>
+  </div>
+
+  <!-- BUSINESS OWNERS / FRANCHISEES -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2)">🏭</div>
+      <div>
+        <div class="niche-title">BUSINESS OWNERS & FRANCHISEES</div>
+        <div class="niche-subtitle">Entity Structure · Exit Planning · TMN Strategy Suite</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Annual Entity Health Check</strong> — Engine runs: S-Corp reasonable comp check (IRS audit trigger), payroll tax filing compliance, officer loan balance (taxable dividend risk), shareholder basis tracking (loss limitation), quarterly estimated taxes on schedule. One missed quarter = 4-6% penalty.</div></div>
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Exit Planning Runway Monitor</strong> — engine tracks: years in business, estimated value, owner age, and projected FI date. At 5 years pre-exit: QSBS 5-year clock, trust structures to multiply exclusions, ESOP analysis, installment sale modeling. At 2 years: engage M&A counsel, strategic buyer vs. ESOP vs. PE recapitalization analysis.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Franchisee-Specific Triggers</strong> — franchise fee amortization over 15 years (§197). Multi-unit owners: consider management company to centralize payroll and profit distribution. Royalty deductibility structure. Concentration risk: often 100% of net worth in franchise system. Engine triggers exit / diversification planning when franchise value &gt;50% of net worth.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Family Management Company</strong> — TMN strategy: separate LLC employs spouse or family for management services. Shifts income to lower-bracket family members. Creates W-2 for retirement plan contributions. Deductible to operating business. Engine surfaces for multi-business owners with family members who can perform legitimate services.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Buy-Sell Agreement Funding Review</strong> — annual review of buy-sell agreement: is it funded? Life insurance face value current? Entity repurchase vs. cross-purchase structure tax implications. Disability buyout rider for non-death scenarios. Engine flags if no buy-sell exists for any multi-owner business client.</div></div>
+    </div>
+  </div>
+
+  <!-- PRE-RETIREES -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2)">🌅</div>
+      <div>
+        <div class="niche-title">PRE-RETIREES (Ages 55–72)</div>
+        <div class="niche-subtitle">The Highest-Leverage Planning Window in a Client's Life</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Roth Conversion 10-Year Window</strong> — from retirement to age 73 (first RMD): potentially the lowest-income window of post-age-40 life. Engine calculates: in each year, convert exactly to top of 22-24% bracket without triggering: (a) IRMAA tier increase, (b) Social Security benefit taxation cliff, (c) net investment income tax at $200K/$250K. Daily recalculation as income picture evolves.</div></div>
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Medicare Enrollment Monitoring</strong> — Part A at 65 (automatic if SS collecting). Part B: enroll within 8-month SEP after employer coverage ends (COBRA doesn't extend). Miss Part B enrollment: 10% premium penalty per year for life. Part D: 1% per month penalty. Engine fires alert at age 64 years 4 months.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Required Minimum Distribution Pre-Planning</strong> — at age 60: project all RMDs at 73. Large pre-tax balances? Conversion strategy begins now. At 70: calculate first RMD due April 1 of age-74 year. Coordinate: Roth conversion in 70-72 age gap, QCD eligibility at 70½. Engine builds 20-year RMD projection for every pre-retiree.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Social Security Breakeven Crossover Model</strong> — every 6 months: recalculate SS breakeven with updated health assumption, portfolio return, and inflation estimate. Widow/widower: different optimal strategy. Divorced: spousal benefit eligibility (10+ year marriage). Engine tracks: days until claiming decision becomes optimal.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Sequence of Returns Risk Monitor</strong> — first 5-7 years of retirement: market return sequence determines portfolio survival. Engine: at retirement, calculates sustainable withdrawal rate given current CAPE ratio, bond yields, and expected inflation. Flags if withdrawal rate &gt;4.5% of current portfolio value. Surfaces spending adjustment or part-time work options.</div></div>
+    </div>
+  </div>
+
+  <!-- DIVORCE SPECIALIST -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2)">⚖️</div>
+      <div>
+        <div class="niche-title">DIVORCE PLANNING SPECIALIST</div>
+        <div class="niche-subtitle">CDFA Coordination + Tax-Neutral Settlement Intelligence</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>After-Tax Asset Equivalency Engine</strong> — $1M in a brokerage account with $500K basis ≠ $1M in a traditional IRA ≠ $1M in a Roth IRA. Engine calculates true after-tax NPV of each asset and produces an "equalization table" showing what settlement would be truly equal on an after-tax basis. This is the most important analytical tool in divorce planning.</div></div>
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>Deferred Comp / Unvested Equity Division</strong> — unvested RSUs, 409A balances, stock options, pension benefits: how to value and divide? Engine surfaces: present value calculation, tax-neutral exchange modeling, QDRO requirements for each plan type. Each plan has unique rules — 401k QDRO ≠ pension QDRO ≠ 457 plan transfer.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Business Valuation Tax Coordination</strong> — closely-held business in marital estate: enterprise value vs. tax-adjusted value (embedded gain on S-Corp assets, built-in gains tax on C-corp). Engine: apply valuation discount for trapped-in gains before settlement. Difference can be $500K+ on a $2M business.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Post-Divorce Income Reconstruction</strong> — surviving on single income: new W-4, estimated taxes, health insurance (COBRA 18 months → marketplace). IRMAA filing status reset (MFJ → Single thresholds). Social Security survivor/spousal planning. Life insurance review (ex-spouse still beneficiary?).</div></div>
+    </div>
+  </div>
+
+  <!-- EXPATS -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(20,184,166,0.1);border:1px solid rgba(20,184,166,0.2)">✈️</div>
+      <div>
+        <div class="niche-title">EXPATRIATES: INBOUND & OUTBOUND</div>
+        <div class="niche-subtitle">US Citizens Abroad · Foreign Nationals in US · Dual-Status</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>FBAR / FATCA Compliance</strong> — FBAR (FinCEN 114): aggregate foreign accounts &gt;$10K — file by April 15, extension to Oct 15. FATCA Form 8938: higher threshold. Penalties: up to $10K/year for non-willful, $100K or 50% of account for willful. Engine: annually checks for any foreign account information in client data and fires mandatory filing alert.</div></div>
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>FEIE / FTC Election (Outbound US)</strong> — Foreign Earned Income Exclusion: $126,500 (2024). Foreign Tax Credit: dollar-for-dollar offset of US tax. Mutual exclusion: choosing FTC preserves Roth IRA eligibility (FEI-excluded income not "earned income" for IRA). Engine models FEIE vs. FTC annually as both income and foreign tax vary.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>State Domicile Termination</strong> — high-tax states (CA, NY) aggressively audit domicile claims. NY: 548-day rule for statutory residents. CA: presumption of residency. Engine: when client moving abroad or to no-income-tax state, generates domicile termination checklist: voter registration, drivers license, bank accounts, safe deposit box, club memberships — the audit trail.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>PFIC / Foreign Pension Complexity</strong> — Passive Foreign Investment Companies (PFICs): punitive US tax treatment on foreign mutual funds. Foreign pensions: US may tax distributions. Treaty analysis required for each country. Engine flags: any foreign investment holding, foreign employer pension plan, or foreign country of origin for appropriate treaty and PFIC analysis.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Exit Tax / Expatriation (Renouncing Citizenship)</strong> — covered expatriate: Mark-to-Market on all assets, deemed sold at FMV on day before expatriation date. $866K gain exclusion (2024). Inheritance from covered expatriate: taxed to US recipient at 40%. Net worth &gt;$2M or average net tax liability &gt;$206K triggers covered status. Most complex single-transaction in US tax code.</div></div>
+    </div>
+  </div>
+
+  <!-- PRIVATE INVESTMENTS -->
+  <div class="niche-card">
+    <div class="niche-header">
+      <div class="niche-icon" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2)">📈</div>
+      <div>
+        <div class="niche-title">PRIVATE INVESTMENTS & ALTERNATIVES</div>
+        <div class="niche-subtitle">PE · Venture · Real Estate Funds · Hedge Funds</div>
+      </div>
+    </div>
+    <div class="niche-triggers">
+      <div class="niche-trigger" style="border-color:var(--critical)"><span class="niche-trigger-icon">⚡</span><div class="niche-trigger-text"><strong>K-1 Season Intelligence</strong> — partnerships, S-corps, trusts issue K-1s: often late (Sept 15 extension deadline). Engine tracks all K-1 sources per client, alerts when expected K-1 not yet received, models estimated K-1 income for estimated tax purposes, and reconciles final K-1 to original estimates when received.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Passive Activity Loss Tracker</strong> — suspended passive losses from real estate or PE investments: freed when activity sold. Engine tracks cumulative PAL per investment, monitors for triggering events (full or partial disposition), and surfaces tax-planning opportunities from upcoming exits across book.</div></div>
+      <div class="niche-trigger" style="border-color:var(--high)"><span class="niche-trigger-icon">🔶</span><div class="niche-trigger-text"><strong>Net Investment Income Tax Monitor</strong> — 3.8% NIIT on investment income above $200K/$250K. Triggered by: dividends, capital gains, rental income, partnership income. Real estate professionals: active income exception available. Engine: calculates NIIT exposure for all clients and surfaces strategies to convert passive to active income where possible.</div></div>
+      <div class="niche-trigger" style="border-color:var(--medium)"><span class="niche-trigger-icon">🟡</span><div class="niche-trigger-text"><strong>Opportunity Zone Expiration Tracking</strong> — QOZ investment: gain exclusion on appreciation if held 10+ years. Dec 31, 2026: original gain deferral expires for any QOZ investment entered by Dec 31, 2019. Engine: tracks all QOZ investments, calculates Dec 31, 2026 tax event, surfaces options to manage.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== SECTION 6: DATA ARCHITECTURE ===================== -->
+<div class="section-header reveal" style="animation-delay:0.55s">
+  <div class="section-icon" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2)">🔌</div>
+  <div class="section-title">DATA ARCHITECTURE: SIGNAL INPUTS</div>
+  <div class="section-badge" style="color:var(--accent);border-color:rgba(59,130,246,0.3)">What the Platform Must Read to Spot Every Opportunity</div>
+</div>
+
+<div class="table-wrapper reveal" style="animation-delay:0.6s">
+<table>
+<thead>
+<tr><th>Data Stream</th><th>Source System</th><th>Signals Extracted</th><th>Refresh Rate</th><th>Strategies Unlocked</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Custodian Positions</strong></td><td>Schwab/Fidelity/TD feed</td><td>Real-time holdings, unrealized G/L, cost basis lots, asset location</td><td>Real-time</td><td>TLH, Rebalancing, Concentration Risk, Wash-Sale Check</td></tr>
+<tr><td><strong>Tax Planning Software</strong></td><td>Holistiplan API</td><td>YTD realized G/L, bracket position, marginal rate, QBI calculation, prior-year returns</td><td>Weekly / on-demand</td><td>Roth Conversion, TLH Optimization, IRMAA Modeling, Year-End Strategies</td></tr>
+<tr><td><strong>Financial Planning</strong></td><td>RightCapital / eMoney API</td><td>Projected AGI, Roth headroom, cash flow, retirement date, Monte Carlo</td><td>Monthly / on-demand</td><td>FI Date, SS Optimization, Contribution Maximization, Pre-Retirement Window</td></tr>
+<tr><td><strong>CRM System</strong></td><td>Salesforce / Redtail</td><td>Life events, employer, birth dates, dependents, contact log sentiment, equity grant data</td><td>Real-time on update</td><td>All Life Event Triggers, 83(b) Countdown, Behavior Risk Score</td></tr>
+<tr><td><strong>Payroll / Comp Data</strong></td><td>Equity management (Carta/Solium)</td><td>RSU vest schedules, option grant dates/expiry, ESPP windows, 409A elections</td><td>Daily sync</td><td>RSU Alert, 83(b) Countdown, Option Exercise Optimizer, 409A Election Window</td></tr>
+<tr><td><strong>Market Data Feed</strong></td><td>Bloomberg / Refinitiv</td><td>S&P 500 level, VIX, sector returns, AFR/§7520 rates, IRMAA thresholds</td><td>Real-time</td><td>TLH, Roth Conversion Trigger, Behavior Risk, GRAT/IDGT Timing</td></tr>
+<tr><td><strong>IRS / Government Data</strong></td><td>IRS.gov, SSA, CMS</td><td>IRMAA thresholds, contribution limits, AFR, RMD tables, SECURE 2.0 changes</td><td>Annual (effective dates tracked)</td><td>IRMAA Monitor, Contribution Max, RMD Engine, Gift Exclusion, QCD Limit</td></tr>
+<tr><td><strong>Real Estate Data</strong></td><td>County records / title company</td><td>Purchase date, purchase price, property type, rental income, 1031 exchange status</td><td>On transaction</td><td>1031 Exchange Timer, Home Sale Exclusion, Cost Segregation, Step-Up at Death</td></tr>
+<tr><td><strong>Business Entity Data</strong></td><td>State filings / accountant integration</td><td>Entity type, payroll, S-corp elections, fiscal year, buy-sell agreements</td><td>Annual / on event</td><td>S-Corp Optimizer, Augusta Rule, Hire Family, Exit Planning, QSBS Clock</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ===================== FOOTER SECTION ===================== -->
+<div class="divider"></div>
+
+<div class="signal-banner" style="background:rgba(59,130,246,0.04);border-color:rgba(59,130,246,0.15)">
+  <div class="signal-banner-icon">🧠</div>
+  <div class="signal-banner-text">
+    <div class="signal-banner-title" style="color:var(--accent)">SILICON VALLEY PRODUCT THESIS: THE INTELLIGENCE LAYER</div>
+    <div class="signal-banner-desc" style="font-size:11px;color:var(--text);line-height:1.7;margin-top:4px">The $200B+ RIA platform market is built on transaction processing. The white space is the intelligence layer: a single system that sits ABOVE every data silo, reads all signals simultaneously, and fires a ranked, time-sensitive action queue when any combination of market movement, calendar deadline, or life event creates a planning opportunity across any client in the book. The advisor's job shifts from discovery to decision. Every dollar of opportunity cost becomes a system failure, not a human oversight. The first platform to own this layer wins the entire market — because switching costs become irreplaceable intelligence accumulation over time.</div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<div class="footer">
+  MARGIN WEALTH MANAGEMENT · INTELLIGENCE PLATFORM v2.0 · CONFIDENTIAL INTERNAL PLANNING DOCUMENT<br>
+  57 Strategies · 9 Niche Profiles · 8 Life Events · 5 IRMAA Tiers · 9 Data Streams<br>
+  <br>⚠️ This document contains tax planning concepts, not tax advice. Consult qualified tax counsel before implementing any strategy.
+</div>
+
+<script>
+// Expand/collapse rows
+function toggleExpand(row) {
+  const next = row.nextElementSibling;
+  if (!next || !next.classList.contains('expand-row')) return;
+  
+  const isOpen = next.classList.contains('open');
+  
+  // Close all
+  document.querySelectorAll('.expand-row.open').forEach(r => r.classList.remove('open'));
+  document.querySelectorAll('.strat-row.expanded').forEach(r => r.classList.remove('expanded'));
+  
+  if (!isOpen) {
+    next.classList.add('open');
+    row.classList.add('expanded');
+  }
+}
+
+// Filter table
+function filterTable(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  document.querySelectorAll('.strat-row').forEach(row => {
+    const cats = row.dataset.cats || '';
+    if (cat === 'all' || cats.includes(cat)) {
+      row.classList.remove('hidden-row');
+      const next = row.nextElementSibling;
+      if (next && next.classList.contains('expand-row')) {
+        next.classList.remove('hidden-row');
+      }
+    } else {
+      row.classList.add('hidden-row');
+      row.classList.remove('expanded');
+      const next = row.nextElementSibling;
+      if (next && next.classList.contains('expand-row')) {
+        next.classList.remove('open');
+        next.classList.add('hidden-row');
+      }
+    }
+  });
+}
+
+// Sort table
+function sortTable(col) {
+  const tbody = document.getElementById('stratBody');
+  const rows = Array.from(tbody.querySelectorAll('.strat-row'));
+  
+  rows.sort((a, b) => {
+    const aVal = a.cells[col]?.textContent.trim() || '';
+    const bVal = b.cells[col]?.textContent.trim() || '';
+    
+    if (col === 0 || col === 7) {
+      return parseInt(aVal) - parseInt(bVal);
+    }
+    return aVal.localeCompare(bVal);
+  });
+  
+  // Re-insert rows with their expand rows
+  rows.forEach(row => {
+    const next = row.nextElementSibling;
+    tbody.appendChild(row);
+    if (next && next.classList.contains('expand-row')) {
+      tbody.appendChild(next);
+    }
+  });
+}
+
+// Animate value bars on load
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.value-fill').forEach(bar => {
+    const pct = bar.dataset.pct;
+    if (pct) bar.style.width = pct + '%';
+  });
+});
+</script>
+</body>
+</html>
